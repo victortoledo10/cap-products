@@ -1,5 +1,10 @@
 namespace es.victor;
 
+using {
+    cuid,
+    managed
+} from '@sap/cds/common';
+
 //https://github.com/Logali-Group/cap-products/blob/06_Vistas_proyecciones/db/schema.cds
 //https://www.youtube.com/watch?v=q_COKUyOi_E&list=PLBBoc2l3GGf34_14VXo2gAaKgoSgdd78z&index=12
 
@@ -62,10 +67,10 @@ type Address {
 
 type Dec : Decimal(16, 2);
 
-entity Products {
-    key ID               : UUID;
-        Name             : String not null;
-        Description      : String;
+entity Products : cuid , managed {
+    //key ID               : UUID;
+        Name             : localized String not null;
+        Description      : localized String;
         ImageUrl         : String;
         ReleaseDate      : DateTime default $now;
         DiscontinuedDate : DateTime;
@@ -85,8 +90,7 @@ entity Products {
                                on Reviews.Product = $self;
 };
 
-entity Orders {
-    key ID       : UUID;
+entity Orders : cuid {
         Date     : Date;
         Customer : String;
         Item     : Composition of many OrderItems
@@ -99,15 +103,13 @@ entity Orders {
         //            }
 };
 
-entity OrderItems {
-    key ID       : UUID;
+entity OrderItems : cuid{
         Order    : Association to Orders;
         Product  : Association to Products;
         Quantity : Integer;
 }
 
-entity Suppliers {
-    key ID      : UUID;
+entity Suppliers : cuid {
         Name    : type of Products : Name;
         Address : Address;
         Email   : String;
@@ -119,7 +121,7 @@ entity Suppliers {
 
 entity Categories {
     key ID   : String(1);
-        Name : String;
+        Name : localized String;
 };
 
 entity StockAvailability {
@@ -129,7 +131,7 @@ entity StockAvailability {
 
 entity Currencies {
     key ID          : String(3);
-        Description : String;
+        Description : localized String;
 };
 
 entity UnitOfMeasures {
@@ -148,16 +150,14 @@ entity Months {
         ShortDescription : String(3);
 };
 
-entity ProductReview {
-    key ID      : UUID;
+entity ProductReview : cuid{
         Name    : String;
         Rating  : Integer;
         Comment : String;
         Product : Association to Products;
 };
 
-entity SalesData {
-    key ID            : UUID;
+entity SalesData : cuid{
         DeliveryDate  : DateTime;
         Revenue       : Decimal(16, 2);
         Product       : Association to Products;
